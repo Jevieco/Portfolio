@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title> JV | Video Editor & Graphic Designer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   1. COLORS & FONTS  (edit these to restyle the whole site)
+   ========================================================== */
+:root{
+  --bg:#0d0d0d;          /* page background (also editable from the Edit panel) */
+  --surface:#161616;     /* sections */
+  --white:#1c1c1c;         /* cards / inputs */
+  --red:#e5171f;         /* accent red: buttons, highlights */
+  --ink:#f4f4f4;         /* main text */
+  --muted:#f4f4f4;       /* secondary text */
+  --line:#2e2e2e;        /* borders */
+    --display:'Space Grotesk',system-ui,sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+}
+
+/* ==========================================================
+   2. BASE STYLES
+   ========================================================== */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;color-scheme:dark}
+body{font-family:var(--sans);color:var(--ink);line-height:1.65;background:var(--bg) center/cover fixed no-repeat}
+a{color:inherit}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+section{padding:96px 6vw}
+.wrap{max-width:1080px;margin:0 auto}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);line-height:1.1;letter-spacing:-.03em;margin-bottom:12px}
+.lead{color:var(--muted);max-width:56ch;margin-bottom:44px}
+.btn{display:inline-block;padding:13px 26px;border-radius:999px;border:1px solid var(--red);background:var(--red);color:#fff;text-decoration:none;font:500 .95rem var(--sans);cursor:pointer;transition:background .2s,color .2s}
+.btn:hover{background:transparent;color:var(--red)}
+.btn.ghost{background:transparent;color:var(--red)}
+.btn.ghost:hover{background:var(--red);color:#fff}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+
+/* ==========================================================
+   3. NAVIGATION
+   ========================================================== */
+nav{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px 6vw;background:rgba(13,13,13,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--display);font-weight:700;font-size:1.3rem;letter-spacing:-.02em;text-decoration:none}
+nav ul{display:flex;gap:26px;list-style:none;font-size:.93rem}
+nav ul a{text-decoration:none;color:var(--muted)}
+nav ul a:hover{color:var(--ink)}
+
+/* ==========================================================
+   4. LANDING / HERO
+   ========================================================== */
+#home{min-height:88vh;display:flex;flex-direction:column;justify-content:center}
+#home h1{font-family:var(--display);font-weight:700;font-size:clamp(2.8rem,8vw,6.4rem);line-height:1;letter-spacing:-.04em;max-width:13ch}
+#home p{margin:26px 0 34px;color:var(--muted);max-width:50ch;font-size:1.1rem}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+/* Video-editor timeline: the one signature element */
+.timeline{margin-top:64px;position:relative;height:46px;border-radius:8px;background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.timeline i{position:absolute;top:8px;height:28px;border-radius:5px;background:#2f2f2f}
+.timeline i:nth-child(2n){background:var(--red)}
+.timeline i:nth-child(3n){background:#4a4a4a}
+.playhead{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);left:0;animation:scrub 6s cubic-bezier(.5,0,.3,1) 1 forwards}
+@keyframes scrub{to{left:calc(100% - 2px)}}
+
+/* ==========================================================
+   5. ABOUT
+   ========================================================== */
+.about{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:center}
+.portrait{aspect-ratio:4/5;border-radius:14px;background:#222 center/cover;display:grid;place-items:center;color:var(--muted);font-size:.9rem;text-align:center}
+.about p{color:var(--muted);margin-bottom:16px}
+.skills{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.skills span{padding:7px 16px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:.88rem}
+
+/* ==========================================================
+   6. PROJECTS
+   ========================================================== */
+#work{background:var(--surface);border-block:1px solid var(--line)}
+.filters{display:flex;gap:10px;margin-bottom:30px;flex-wrap:wrap}
+.filters button{color:var(--ink);padding:8px 20px;border-radius:999px;border:1px solid var(--line);background:var(--white);font:inherit;font-size:.9rem;cursor:pointer}
+.filters button.on{background:var(--red);color:#fff;border-color:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:22px}
+.card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;display:block}
+.card .thumb{aspect-ratio:16/10;background:#242424 center/cover;display:grid;place-items:center;color:var(--muted);font-size:.85rem;transition:transform .4s}
+.card:hover .thumb{transform:scale(1.03)}
+.card .clip{overflow:hidden}
+.card .info{padding:16px 18px}
+.card h3{font-size:1.05rem;font-weight:500}
+.card small{color:var(--muted)}
+.del{position:absolute;top:10px;right:10px;display:none;border:0;border-radius:999px;width:30px;height:30px;background:var(--red);color:#fff;cursor:pointer;z-index:2}
+body.editing .del{display:block}
+.empty{color:var(--muted);padding:30px 0}
+
+/* ==========================================================
+   7. PROCESS (a real sequence, so numbered)
+   ========================================================== */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;counter-reset:s}
+.step{padding:26px;counter-increment:s}
+.step::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--red);color:#fff;font-size:.9rem;margin-bottom:16px}
+.step h3{font-weight:500;margin-bottom:6px}
+.step p{color:var(--muted);font-size:.93rem}
+
+/* ==========================================================
+   8. WHY CHOOSE ME
+   ========================================================== */
+#why{background:var(--red);color:#fff}
+#why .lead{color:#ffe0e1}
+.reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px}
+.reasons div{border-top:1px solid rgba(255,255,255,.55);padding-top:18px}
+.reasons h3{font-family:var(--display);font-weight:600;font-size:1.4rem;letter-spacing:-.02em;margin-bottom:6px}
+.reasons p{color:#ffe0e1;font-size:.95rem}
+
+/* ==========================================================
+   9. CONTACT
+   ========================================================== */
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.links{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.links a{color:var(--ink);display:flex;justify-content:space-between;padding:16px 20px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-decoration:none}
+.links a:hover{border-color:var(--red)}
+.links span{color:var(--muted)}
+form.msg{display:flex;flex-direction:column;gap:12px}
+input,textarea,select{font:inherit;color:var(--ink);padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--white);width:100%}
+textarea{min-height:130px;resize:vertical}
+footer{padding:28px 6vw;text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+
+/* ==========================================================
+   10. EDIT PANEL (floating tool for you, the owner)
+   ========================================================== */
+#gear{position:fixed;right:20px;bottom:20px;z-index:50;width:52px;height:52px;border-radius:50%;border:0;background:var(--red);color:#fff;font-size:1.3rem;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+#editor{position:fixed;right:20px;bottom:84px;z-index:50;width:min(340px,calc(100vw - 40px));max-height:75vh;overflow:auto;padding:20px;display:none;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+#editor.open{display:block}
+#editor h4{font-weight:500;margin:14px 0 8px}
+#editor h4:first-child{margin-top:0}
+#editor label{display:block;font-size:.82rem;color:var(--muted);margin:8px 0 4px}
+#editor .row{display:flex;gap:8px;margin-top:10px}
+#editor .btn{padding:9px 16px;font-size:.85rem}
+#editor input[type=color]{padding:2px;height:40px}
+
+/* ==========================================================
+   10b. LIGHTBOX (full project view when a card is clicked)
+   ========================================================== */
+.card{cursor:pointer}
+#lightbox{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 70px 30px;background:rgba(0,0,0,.92)}
+#lightbox.open{display:flex}
+#lbImg{max-width:100%;max-height:72vh;object-fit:contain;border-radius:8px}
+#lbEmpty{display:none;color:var(--muted);padding:80px 40px;border:1px dashed var(--line);border-radius:8px}
+.lbcap{text-align:center;color:#fff}
+.lbcap h3{font:600 1.3rem var(--display);letter-spacing:-.02em}
+.lbcap small{display:block;color:var(--muted);margin-bottom:12px}
+.lbbtn{position:absolute;border:0;background:var(--white);color:#fff;width:46px;height:46px;border-radius:50%;font-size:1.5rem;cursor:pointer}
+.lbbtn:hover{background:var(--red)}
+#lbClose{top:16px;right:16px}
+#lbPrev{left:14px;top:50%}
+#lbNext{right:14px;top:50%}
+
+/* ==========================================================
+   11. MOBILE
+   ========================================================== */
+@media(max-width:760px){
+  nav ul{gap:14px;font-size:.85rem}
+  .about,.contact{grid-template-columns:1fr}
+  .portrait{max-width:280px}
+  section{padding:68px 6vw}
+  #lightbox{padding:70px 14px 20px}
+  #lbPrev,#lbNext{top:auto;bottom:16px}
+}
+@media(prefers-reduced-motion:reduce){.playhead{animation:none;left:35%}html{scroll-behavior:auto}}
+</style>
+</head>
+
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<nav>
+  <a class="logo" href="#home">Jevie Valdez</a> <!-- EDIT: your name or brand -->
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Projects</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#why">Why me</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ============ LANDING PAGE ============ -->
+<section id="home">
+  <div class="wrap">
+    <!-- EDIT: headline and intro text -->
+    <h1>Stories that move, designs that stay.</h1>
+    <p>I'm a video editor and graphic designer helping brands, creators and businesses turn raw ideas into polished visuals that get noticed.</p>
+    <div class="cta">
+      <a class="btn" href="#work">See my projects</a>
+      <a class="btn ghost" href="#contact">Hire me</a>
+    </div>
+    <div class="timeline" aria-hidden="true">
+      <i style="left:2%;width:14%"></i><i style="left:17%;width:9%"></i><i style="left:27%;width:21%"></i>
+      <i style="left:49%;width:7%"></i><i style="left:57%;width:17%"></i><i style="left:75%;width:12%"></i><i style="left:88%;width:10%"></i>
+      <div class="playhead"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ME ============ -->
+<section id="about">
+  <div class="wrap about">
+    <!-- EDIT: set your photo in the Edit panel (or replace the style below with background-image:url('your-photo.jpg')) -->
+    <div class="portrait" id="portrait">Add your photo<br>in the Edit panel</div>
+    <div>
+      <h2>About me</h2>
+      <!-- EDIT: your story -->
+      <p>Hi, I'm Jevie Valdez, a freelance video editor and graphic designer with 5 years of experience. I cut social videos, ads, YouTube content and brand films, and I design logos, posters and social media graphics.</p>
+      <p>I care about clean work, clear communication and delivering on time, so you can focus on your business while I handle the visuals.</p>
+      <!-- EDIT: your skills / software -->
+      <div class="skills">
+        <span>Premiere Pro</span><span>Capcut</span><span>Photoshop</span><span>Illustrator</span><span>Canva</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MY PROJECTS ============ -->
+<section id="work">
+  <div class="wrap">
+    <h2>My projects</h2>
+    <p class="lead">A selection of recent video edits and graphic design work. Click a project to see it in full.</p>
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">All</button>
+      <button data-f="Video">Video editing</button>
+      <button data-f="Graphic">Graphic design</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<!-- ============ MY PROCESS ============ -->
+<section id="process">
+  <div class="wrap">
+    <h2>My process</h2>
+    <p class="lead">A simple, clear workflow so you always know what happens next.</p>
+    <!-- EDIT: change titles/descriptions of each step (numbers are automatic) -->
+    <div class="steps">
+      <div class="step panel"><h3>Discovery</h3><p>We talk about your goals, audience, style and deadline.</p></div>
+      <div class="step panel"><h3>Planning</h3><p>I gather your files, build a plan and share a quote.</p></div>
+      <div class="step panel"><h3>Creation</h3><p>I edit or design your project and send a first draft.</p></div>
+      <div class="step panel"><h3>Revisions</h3><p>You give feedback and I refine until it feels right.</p></div>
+      <div class="step panel"><h3>Delivery</h3><p>You receive final files in every format you need.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY CHOOSE ME ============ -->
+<section id="why">
+  <div class="wrap">
+    <h2>Why choose me</h2>
+    <p class="lead">What you can expect when we work together.</p>
+    <!-- EDIT: your selling points -->
+    <div class="reasons">
+      <div><h3>Fast turnaround</h3><p>Clear timelines and on-time delivery, every project.</p></div>
+      <div><h3>Both skills, one person</h3><p>Video and graphics from one creator means a consistent brand look.</p></div>
+      <div><h3>Revisions included</h3><p>I keep refining until you are happy with the result.</p></div>
+      <div><h3>Easy communication</h3><p>Quick replies and updates at every stage.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="wrap contact">
+    <div>
+      <h2>Let's work together</h2>
+      <p class="lead">Tell me about your project. I usually reply within a day.</p>
+      <div class="links">
+        <!-- EDIT: replace with your real Gmail, Facebook and Instagram links -->
+        <a href="mailto:vjevie2122l@gmail.com" id="mailLink">Gmail <span>vjevie2122l@gmail.com</span></a>
+        <a href="https://www.facebook.com/jevie.valdez.30" target="_blank" rel="noopener">Facebook <span>facebook.com/jevie.valdez.30</span></a>
+        <a href="https://www.instagram.com/jevieco/" target="_blank" rel="noopener">Instagram <span>@jevieco</span></a>
+      </div>
+    </div>
+    <!-- This form opens the visitor's email app with the message filled in -->
+    <form class="msg" id="msgForm">
+      <input id="fName" placeholder="Your name" required>
+      <select id="fType"><option>Video editing</option><option>Graphic design</option><option>Both</option></select>
+      <textarea id="fMsg" placeholder="Tell me about your project" required></textarea>
+      <button class="btn" type="submit">Send message</button>
+    </form>
+  </div>
+</section>
+
+<footer>&copy; <span id="yr"></span> Jevie Valdez. All rights reserved.</footer>
+
+<!-- ============ LIGHTBOX (full project view) ============ -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Project preview">
+  <button class="lbbtn" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lbbtn" id="lbPrev" aria-label="Previous project">&lsaquo;</button>
+  <button class="lbbtn" id="lbNext" aria-label="Next project">&rsaquo;</button>
+  <img id="lbImg" alt="">
+  <div id="lbEmpty">No image added for this project yet.</div>
+  <div class="lbcap">
+    <h3 id="lbTitle"></h3><small id="lbType"></small>
+    <a class="btn" id="lbLink" target="_blank" rel="noopener">View video / full project</a>
+  </div>
+</div>
+
+<!-- ============ EDIT PANEL ============ -->
+<button id="gear" aria-label="Open edit panel" title="Edit portfolio">&#9881;</button>
+<div id="editor" class="panel">
+  <h4>Background</h4>
+  <label>Color</label><input type="color" id="bgColor" value="#0d0d0d">
+  <label>Image (optional)</label><input type="file" id="bgFile" accept="image/*">
+  <div class="row"><button class="btn ghost" id="bgReset">Reset background</button></div>
+
+  <h4>Profile photo</h4>
+  <input type="file" id="photoFile" accept="image/*">
+
+  <h4>Add a project</h4>
+  <label>Title</label><input id="pTitle" placeholder="e.g. Travel vlog edit">
+  <label>Type</label><select id="pType"><option value="Video">Video editing</option><option value="Graphic">Graphic design</option><option value="Logo Design">Logo Design</option></select>
+  <label>Thumbnail image</label><input type="file" id="pFile" accept="image/*">
+  <label>Link to video / full project (optional)</label><input id="pLink" placeholder="https://youtube.com/...">
+  <div class="row"><button class="btn" id="pAdd">Add project</button></div>
+  <p style="font-size:.78rem;color:var(--muted);margin-top:12px">Changes save in this browser, and large image files are supported. Use the &times; on a card to delete it. To make projects permanent for everyone, add them to the <b>PROJECTS</b> list in the code.</p>
+</div>
+
+<script>
+/* ==========================================================
+   A. YOUR SETTINGS (edit these)
+   ========================================================== */
+const SETTINGS = {
+  email: "vjevie2122l@gmail.com"      // where the contact form sends messages
+};
+
+/* ==========================================================
+   B. PROJECTS LIST (permanent projects - edit/add here)
+   img = image file name or URL, link = where it opens on click
+   type must be "Video" or "Graphic"
+   ========================================================== */
+const PROJECTS = [
+  { title: "Sample: Brand promo video", type: "Video",   img: "", link: "" },
+  { title: "Sample: Logo & brand kit",  type: "Graphic", img: "", link: "" },
+  { title: "Sample: YouTube edit",      type: "Video",   img: "", link: "" },
+  { title: "Sample: Social media posts",type: "Graphic", img: "", link: "" }
+  
+];
+
+/* ==========================================================
+   C. SAVE / LOAD (keeps your edits in the browser)
+   ========================================================== */
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){ alert("Could not save your settings in this browser."); } }
+};
+let added   = store.get("pf_added", []);   // projects added via the panel
+let hidden  = store.get("pf_hidden", []);  // built-in projects you removed
+let filter  = "all";
+let visible = [], cur = 0;   // projects currently shown, and the one open in the lightbox
+
+/* ----------------------------------------------------------
+   BIG FILE STORAGE (IndexedDB)
+   Images are saved as real files in the browser database, so
+   large photos work (no 5 MB limit like before). Only small
+   text info (titles, links) goes in localStorage.
+   ---------------------------------------------------------- */
+const idb = {
+  db: null,
+  open(){
+    return this.db ? Promise.resolve(this.db) : new Promise((res, rej) => {
+      const r = indexedDB.open("portfolio_files", 1);
+      r.onupgradeneeded = () => r.result.createObjectStore("files");
+      r.onsuccess = () => { this.db = r.result; res(r.result); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async run(mode, fn){
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const t = db.transaction("files", mode);
+      const req = fn(t.objectStore("files"));
+      t.oncomplete = () => res(req && req.result);
+      t.onerror = () => rej(t.error);
+    });
+  },
+  put(k, blob){ return this.run("readwrite", s => s.put(blob, k)); },
+  get(k){ return this.run("readonly", s => s.get(k)); },
+  del(k){ return this.run("readwrite", s => s.delete(k)); }
+};
+const urls = {};   // cache of ready-to-display image addresses
+try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}
+
+// Save an uploaded file. Pass a key to replace an existing file (e.g. "bg", "photo").
+async function saveFile(file, key){
+  key = key || "f" + Date.now() + Math.random().toString(36).slice(2, 7);
+  if(urls[key]) URL.revokeObjectURL(urls[key]);
+  urls[key] = URL.createObjectURL(file);      // works right away, even if saving fails
+  try{ await idb.put(key, file); }
+  catch(e){ alert("The image shows now but could not be saved for next time (browser storage unavailable)."); }
+  return key;
+}
+async function fileURL(key){
+  if(!key) return "";
+  if(urls[key]) return urls[key];
+  try{ const b = await idb.get(key); if(b){ urls[key] = URL.createObjectURL(b); return urls[key]; } }catch(e){}
+  return "";
+}
+async function deleteFile(key){
+  if(!key) return;
+  if(urls[key]){ URL.revokeObjectURL(urls[key]); delete urls[key]; }
+  try{ await idb.del(key); }catch(e){}
+}
+
+/* ==========================================================
+   D. RENDER PROJECTS
+   ========================================================== */
+let renderToken = 0;
+async function render(){
+  const token = ++renderToken;
+  const all = [...PROJECTS.map((p,i)=>({...p, id:"b"+i})), ...added.map((p,i)=>({...p, id:"a"+i}))]
+    .filter(p => !hidden.includes(p.id) && (filter==="all" || p.type===filter));
+  for(const p of all){ if(!p.img && p.imgKey) p.img = await fileURL(p.imgKey); }
+  if(token !== renderToken) return;   // a newer render started, skip this one
+  visible = all;
+  const grid = $("grid");
+  grid.innerHTML = "";
+  if(!all.length){ grid.innerHTML = '<p class="empty">No projects here yet. Open the edit panel (gear icon) to add one.</p>'; return; }
+  all.forEach((p, i) => {
+    const a = document.createElement("div");
+    a.className = "card";
+    a.tabIndex = 0;
+    a.setAttribute("role", "button");
+    const bg = p.img ? `style="background-image:url('${p.img}')"` : "";
+    a.innerHTML = `<button class="del" title="Delete" aria-label="Delete project">&times;</button>
+      <div class="clip"><div class="thumb" ${bg}>${p.img ? "" : "Thumbnail"}</div></div>
+      <div class="info"><h3></h3><small>${p.type==="Video" ? "Video editing" : "Graphic design"}</small></div>`;
+    a.querySelector("h3").textContent = p.title;
+    a.querySelector(".del").onclick = e => { e.preventDefault(); e.stopPropagation(); removeProject(p.id); };
+    a.onclick = () => openBox(i);
+    a.onkeydown = e => { if(e.key === "Enter") openBox(i); };
+    grid.appendChild(a);
+  });
+}
+/* ---- Lightbox: shows the full project image ---- */
+function openBox(i){
+  cur = i;
+  const p = visible[i];
+  $("lbImg").style.display = p.img ? "block" : "none";
+  $("lbEmpty").style.display = p.img ? "none" : "block";
+  if(p.img){ $("lbImg").src = p.img; $("lbImg").alt = p.title; }
+  $("lbTitle").textContent = p.title;
+  $("lbType").textContent = p.type === "Video" ? "Video editing" : "Graphic design";
+  $("lbLink").style.display = p.link ? "inline-block" : "none";
+  if(p.link) $("lbLink").href = p.link;
+  $("lightbox").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeBox(){ $("lightbox").classList.remove("open"); document.body.style.overflow = ""; }
+const step = d => openBox((cur + d + visible.length) % visible.length);
+$("lbClose").onclick = closeBox;
+$("lbPrev").onclick = () => step(-1);
+$("lbNext").onclick = () => step(1);
+$("lightbox").onclick = e => { if(e.target.id === "lightbox") closeBox(); };
+document.addEventListener("keydown", e => {
+  if(!$("lightbox").classList.contains("open")) return;
+  if(e.key === "Escape") closeBox();
+  if(e.key === "ArrowLeft") step(-1);
+  if(e.key === "ArrowRight") step(1);
+});
+
+function removeProject(id){
+  if(!confirm("Delete this project?")) return;
+  if(id[0]==="a"){ deleteFile(added[+id.slice(1)].imgKey); added.splice(+id.slice(1),1); store.set("pf_added", added); }
+  else { hidden.push(id); store.set("pf_hidden", hidden); }
+  render();
+}
+$("filters").onclick = e => {
+  if(e.target.tagName!=="BUTTON") return;
+  filter = e.target.dataset.f;
+  document.querySelectorAll("#filters button").forEach(b => b.classList.toggle("on", b===e.target));
+  render();
+};
+
+/* ==========================================================
+   E. EDIT PANEL: add projects, background, photo
+   ========================================================== */
+$("gear").onclick = () => {
+  const open = $("editor").classList.toggle("open");
+  document.body.classList.toggle("editing", open);
+};
+$("pAdd").onclick = async () => {
+  const title = $("pTitle").value.trim();
+  if(!title){ alert("Please enter a project title."); return; }
+  const file = $("pFile").files[0];
+  const imgKey = file ? await saveFile(file) : "";
+  added.push({ title, type:$("pType").value, imgKey, link:$("pLink").value.trim() });
+  store.set("pf_added", added);
+  $("pTitle").value = ""; $("pLink").value = ""; $("pFile").value = "";
+  render();
+};
+
+async function applyBg(){
+  const bg = store.get("pf_bg", {});
+  document.documentElement.style.setProperty("--bg", bg.color || "#0d0d0d");
+  const img = bg.hasImg ? await fileURL("bg") : (bg.img || "");   // bg.img = older saved format
+  document.body.style.backgroundImage = img ? `url('${img}')` : "none";
+  if(bg.color) $("bgColor").value = bg.color;
+}
+$("bgColor").oninput = e => { const b = store.get("pf_bg", {}); b.color = e.target.value; store.set("pf_bg", b); applyBg(); };
+$("bgFile").onchange = async e => { if(!e.target.files[0]) return; await saveFile(e.target.files[0], "bg"); const b = store.get("pf_bg", {}); b.hasImg = true; delete b.img; store.set("pf_bg", b); applyBg(); };
+$("bgReset").onclick = () => { deleteFile("bg"); store.set("pf_bg", {}); $("bgColor").value = "#0d0d0d"; applyBg(); };
+
+async function applyPhoto(){
+  const old = store.get("pf_photo", "");   // older saved format
+  const img = old.startsWith && old.startsWith("data:") ? old : await fileURL("photo");
+  if(img){ $("portrait").style.backgroundImage = `url('${img}')`; $("portrait").textContent = ""; }
+}
+$("photoFile").onchange = async e => { if(!e.target.files[0]) return; await saveFile(e.target.files[0], "photo"); store.set("pf_photo", "saved"); applyPhoto(); };
+
+/* ==========================================================
+   F. CONTACT FORM (opens visitor's email app)
+   ========================================================== */
+$("mailLink").href = "mailto:" + SETTINGS.email;
+$("msgForm").onsubmit = e => {
+  e.preventDefault();
+  const subject = encodeURIComponent("Project inquiry: " + $("fType").value);
+  const body = encodeURIComponent($("fMsg").value + "\n\n- " + $("fName").value);
+  location.href = `mailto:${SETTINGS.email}?subject=${subject}&body=${body}`;
+};
+
+/* ==========================================================
+   G. START
+   ========================================================== */
+
+$("yr").textContent = new Date().getFullYear();
+applyBg(); applyPhoto(); render();
+</script>
+</body>
+</html>
